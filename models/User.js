@@ -19,19 +19,21 @@ const userSchema = new Schema(
             required: true,
             unique: true,
             validate: [validateEmail, 'Please fill a valid email address'],
-            match: [/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/, 'Please fill a valid email address']
+            match: [/^([a-z0-9_\.-]+)@([\da-z\.-]+)\.([a-z\.]{2,6})$/, 'Please fill a valid email address']
         },
+        thoughts: [
+            {
+                type: Schema.Types.ObjectId,
+                ref: 'thought',
+            },
+        ],
+        friends: [
+            {
+                type: Schema.Types.ObjectId,
+                ref: 'user',
+            },
+        ],
     },
-    thoughts: [
-    {
-        type: Schema.Types.ObjectId,
-        ref: 'thought',
-    },
-    ],
-    friends: [
-        type: Schema.Types.ObjectId,
-        ref: 'user',
-    ]
     {
         // Mongoose supports two Schema options to transform Objects after querying MongoDb: toJSON and toObject.
         // Here we are indicating that we want virtuals to be included with our response, overriding the default behavior
@@ -40,6 +42,7 @@ const userSchema = new Schema(
         },
         id: false,
     }
+
 );
 
 // Create a virtual property `fullName` that gets and sets the user's full name
@@ -49,10 +52,6 @@ userSchema
     .get(function () {
         return this.friends.length;
     })
-    // Setter to set the first and last name
-    .set(function (v) {
-        // Do I need a .set?
-    });
 
 // Initialize our User model
 const User = model('user', userSchema);
