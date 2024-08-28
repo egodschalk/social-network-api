@@ -1,5 +1,5 @@
 const { Schema, model } = require('mongoose');
-const Reaction = require('./Reaction');
+const reactionSchema = require('./Reaction');
 
 // Schema to create Post model
 const thoughtSchema = new Schema(
@@ -22,27 +22,24 @@ const thoughtSchema = new Schema(
             required: true,
         },
         reactions: [
-        {
-            type: Schema.Types.ObjectId,
-            ref: 'reaction',
+            reactionSchema
+        ],
+    },
+    {
+        toJSON: {
+            virtuals: true,
         },
-    ],
-    },
-  {
-    toJSON: {
-      virtuals: true,
-    },
-    id: false,
-  }
+        id: false,
+    }
 );
 
 // Create a virtual property `reactions` that gets the amount of response per thought
 thoughtSchema
-  .virtual('reactionCount')
-  // Getter
-  .get(function () {
-    return this.reactions.length;
-  });
+    .virtual('reactionCount')
+    // Getter
+    .get(function () {
+        return this.reactions.length;
+    });
 
 // Initialize our Thought model
 const Thought = model('thought', thoughtSchema);
